@@ -1,0 +1,20 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: database-type-labeling
+spec:
+  rules:
+    - name: assign-type-database
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              type: database
+          spec:
+            (containers):
+            - (image): "*cassandra* | *mongo*"

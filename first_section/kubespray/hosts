@@ -1,0 +1,2 @@
+192.168.122.29 ansible_pass='ahmet' ansible_user=root
+192.168.122.29 ansible_pass='ahmet' ansible_user=kubernetmachinetwo

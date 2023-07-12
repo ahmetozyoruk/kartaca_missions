@@ -1,0 +1,7 @@
+---
+- name: Playbook to create a new textfile using RAW module
+  hosts: all
+
+  tasks:
+  - name: create newfile.txt
+    raw: touch newfile.txt
