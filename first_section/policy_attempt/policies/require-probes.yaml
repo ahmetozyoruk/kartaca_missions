@@ -13,9 +13,10 @@ metadata:
       lifecycle during deployments, restarts, and upgrades. A `readinessProbe` is used by Services
       and Deployments to determine if the Pod is ready to receive network traffic.
       This policy validates that all containers have one of readinessProbe,
-      startupProbe defined.      
+      startupProbe defined. In addition, CPU and memory resource requests and limits are validated with
+      with this policy.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: enforce
   background: true
   rules:
   - name: validate-probes
@@ -44,3 +45,20 @@ spec:
             - key: readinessProbe
               operator: AllNotIn
               value: "{{ element.keys(@)[] }}"
+  - name: validate-resources
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "CPU and memory resource requests and limits are required."
+      pattern:
+        spec:
+          containers:
+          - resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"

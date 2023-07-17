@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: mongo
+  name: mongo
+  namespace: default
+spec:
+  containers:
+    - image: mongo
+      name: mongo
+      resources: {}
