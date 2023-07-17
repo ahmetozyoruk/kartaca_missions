@@ -53,7 +53,7 @@ Example inventory generator usage:
 
 ```ShellSession
 cp -r inventory/sample inventory/mycluster
-declare -a IPS=(10.10.1.3 10.10.1.4 10.10.1.5)
+declare -a IPS=(192.168.122.170)
 CONFIG_FILE=inventory/mycluster/hosts.yml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 ```
 
@@ -78,8 +78,8 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 **NOTE:** After the new system is installed, the rejected connection denial appears when you try to log on to the Debian Linux server as a root user. Here is the example information:
 
 ```ShellSession
-$ ssh root@192.168.120.41
-ssh: connect to host 192.168.120.41 port 22: Connection refused
+$ ssh root@192.168.122.170
+ssh: connect to host 192.168.122.170 port 22: Connection refused
 ```
 
 To enable SSH root login, perform the following steps:
@@ -98,8 +98,8 @@ You will be able to use SSH login using the root account. The following output i
 **Example Output:**
 
 ```ShellSession
-[ahmet@ahmethost ~]$ ssh kubernetmachine@192.168.122.170
-kubernetmachine@192.168.122.170's password: 
+[ahmet@ahmethost ~]$ ssh root@192.168.122.170
+root@192.168.122.170's password: 
 Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.19.0-46-generic x86_64)
 
  * Documentation:  https://help.ubuntu.com
@@ -114,8 +114,15 @@ To see these additional updates run: apt list --upgradable
 1 additional security update can be applied with ESM Apps.
 Learn more about enabling ESM Apps service at https://ubuntu.com/esm
 
-Last login: Mon Jul 17 08:52:56 2023 from 192.168.122.1
-kubernetmachine@kubernetmachine-Standard-PC-Q35-ICH9-2009:~$ 
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+root@kubernetmachine-Standard-PC-Q35-ICH9-2009:~#
 ```
 
 Then try this to run the playbook as root
