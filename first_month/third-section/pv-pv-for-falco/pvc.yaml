@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: "2023-07-24T12:45:27Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/instance: falco-ui-redis
+    app.kubernetes.io/name: falcosidekick-ui-redis
+  name: falco-falcosidekick-ui-redis-data-falco-falcosidekick-ui-redis-0
+  namespace: falco
+  resourceVersion: "93703"
+  uid: 688f638e-30ff-4e34-97de-21f17005d4a9
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+status:
+  phase: Pending

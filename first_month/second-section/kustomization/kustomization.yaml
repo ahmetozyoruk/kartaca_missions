@@ -1,0 +1,8 @@
+# kustomization.yaml contents
+resources:
+  - ./overlay/staging
+  - ./overlay/production
+  - ./all.yaml
+namePrefix: cluster-a-
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization

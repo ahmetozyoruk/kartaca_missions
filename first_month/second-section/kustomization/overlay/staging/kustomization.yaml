@@ -1,0 +1,4 @@
+# kustomization.yaml contents
+resources:
+ - ./../../base
+namePrefix: stag-

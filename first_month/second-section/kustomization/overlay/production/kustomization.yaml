@@ -1,0 +1,7 @@
+# kustomization.yaml contents
+resources:
+ - ./../../base
+patchesStrategicMerge:
+ - increase_replicas.yaml
+ - set_memory.yaml
+namePrefix: prod-

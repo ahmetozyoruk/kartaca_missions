@@ -1,0 +1,19 @@
+loki:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClassName: efs-sc
+    mountPath: "/data"
+    size: 20Gi
+  securityContext:
+    runAsGroup: 0
+    runAsNonRoot: false
+    runAsUser: 0
+
+
+promtail:
+  enabled: false
+
+
+grafana:
+  enabled: false

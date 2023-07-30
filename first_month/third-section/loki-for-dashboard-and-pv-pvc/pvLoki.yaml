@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-loki-backend-0
+  namespace: grafana-loki
+spec:
+  accessModes:
+   - ReadWriteOnce
+  capacity:
+   storage: 10Gi
+  volumeMode: Filesystem
+  hostPath:
+    path: /mnt/data
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-loki-backend-1
+  namespace: grafana-loki
+spec:
+  accessModes:
+   - ReadWriteOnce
+  capacity:
+   storage: 10Gi
+  volumeMode: Filesystem
+  hostPath:
+    path: /mnt/data
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-loki-backend-2
+  namespace: grafana-loki
+spec:
+  accessModes:
+   - ReadWriteOnce
+  capacity:
+   storage: 10Gi
+  volumeMode: Filesystem
+  hostPath:
+    path: /mnt/data
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-loki-write-0
+  namespace: grafana-loki
+spec:
+  accessModes:
+   - ReadWriteOnce
+  capacity:
+   storage: 10Gi
+  volumeMode: Filesystem
+  hostPath:
+    path: /mnt/data
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-loki-write-1
+  namespace: grafana-loki
+spec:
+  accessModes:
+   - ReadWriteOnce
+  capacity:
+   storage: 10Gi
+  volumeMode: Filesystem
+  hostPath:
+    path: /mnt/data
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-loki-write-2
+  namespace: grafana-loki
+spec:
+  accessModes:
+   - ReadWriteOnce
+  capacity:
+   storage: 10Gi
+  volumeMode: Filesystem
+  hostPath:
+    path: /mnt/data

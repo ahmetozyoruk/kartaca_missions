@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-nginx
+  labels:
+    app: nginx
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: {{ .Values.ports.http.name }}
+              containerPort: {{ .Values.ports.http.port }}
+              protocol: {{ .Values.ports.http.protocol }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probe.livenessProbe.httpGet.path }}
+              port: {{ .Values.probe.livenessProbe.httpGet.port }}
+              httpHeaders:
+                - name: {{ .Values.probe.livenessProbe.httpGet.httpHeaders.name }}
+                  value: {{ .Values.probe.livenessProbe.httpGet.httpHeaders.value }}
+            failureThreshold: {{ .Values.probe.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.probe.livenessProbe.periodSeconds }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.probe.startupProbe.httpGet.path }}
+              port: {{ .Values.probe.startupProbe.httpGet.port }}
+              httpHeaders:
+                - name: {{ .Values.probe.startupProbe.httpGet.httpHeaders.name }}
+                  value: {{ .Values.probe.startupProbe.httpGet.httpHeaders.value }}
+            failureThreshold: {{ .Values.probe.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.probe.livenessProbe.periodSeconds }}
