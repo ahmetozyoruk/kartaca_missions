@@ -1,0 +1,89 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: myapp
+  namespace: default
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-pre-populate-only: 'true'
+        vault.hashicorp.com/role: 'myapp'
+        vault.hashicorp.com/secret-volume-path: '/config/'
+        vault.hashicorp.com/agent-configmap: 'myapp-config'
+      labels:
+        app: myapp  
+    spec:
+      containers:
+        - image: ahmetozyoruk/myapp:v4.0
+          name: myapp
+          ports:
+            - containerPort: 8080
+          resources: {}
+      volumes:
+        - name: myapp-config
+          configMap:
+            name: myapp-config
+            items:
+              - key: config-init.hcl
+                path: config-init.hcl
+      hostname: myapp
+      restartPolicy: Always
+      serviceAccountName: myapp
+
+---
+
+apiVersion: v1
+data:
+  config-init.hcl: |
+   "auto_auth" = {
+      "method" = {
+        "config" = {
+          "role" = "myapp"
+        }
+        "type" = "kubernetes"
+      }
+      "sink" = {
+        "config" = {
+          "path" = "/home/vault/.token"
+        }
+
+        "type" = "file"
+      }
+    }
+
+    "exit_after_auth" = true
+    "pid_file" = "/home/vault/.pid"
+
+    template {
+      contents = <<EOH
+        {{- with secret "database/creds/my-role" -}}
+        database:
+          db_host: 192.168.122.1
+          db_port: 3306
+          db_name: myapp
+          db_username: {{ .Data.username }}
+          db_password: {{ .Data.password }}
+        {{- end }}
+      EOH
+      destination = "/config/config.yaml"
+    }
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: myapp-config
+

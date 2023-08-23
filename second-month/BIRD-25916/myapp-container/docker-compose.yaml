@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  myapp:
+    image: ahmetozyoruk/myapp:v5.0
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: myapp
+    hostname: myapp
+    ports:
+      - 8080:8080
+    deploy:
+      restart_policy:
+        condition: on-failure

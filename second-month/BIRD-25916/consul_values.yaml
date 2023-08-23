@@ -1,0 +1,77 @@
+global:
+  enabled: true
+  datacenter: dc1
+    # Gossip encryption
+  gossipEncryption:
+    secretName: 'consul-gossip-encryption-key'
+    secretKey: 'key'
+
+
+server:
+  enabled: false
+
+externalServers:
+  enabled: true
+  hosts:
+    - "192.168.122.73"
+    - "192.168.122.154"
+
+client:
+  enabled: true
+  exposeGossipPorts: true
+  hostNetwork: true
+  join:
+    - "192.168.122.73"
+    - "192.168.122.154"
+  grpc: true
+  extraConfig: |
+    {
+      "log_level": "INFO",
+      "verify_incoming": true,
+      "verify_outgoing": true,
+      "verify_server_hostname": true,
+      "ca_file": "/consul/userconfig/consul-client-certs/ca.pem",
+      "cert_file": "/consul/userconfig/consul-client-certs/consul-client-crt.pem",
+      "key_file": "/consul/userconfig/consul-client-certs/consul-client-key.pem",
+      "ports": {
+        "dns": 8600,
+        "grpc": 8502,
+        "grpc_tls": 8503,
+        "http": 8500,
+        "https": 8501,
+        "serf_lan": 8301,
+        "serf_wan": 8302,
+        "server": 8300
+      }
+    }
+
+  extraEnvironmentVars: 
+    CONSUL_CACERT: /consul/userconfig/consul-client-certs/ca.pem
+    CONSUL_CLIENT_CERT: /consul/userconfig/consul-client-certs/consul.pem
+    CONSUL_CLIENT_KEY: /consul/userconfig/consul-client-certs/consul-key.pem
+    CONSUL_HTTP_SSL: true
+    CONSUL_HTTP_PORT: 8501
+    # CONSUL_HTTP_ADDR: https://localhost:8501
+    CONSUL_HTTP_ADDR: https://127.0.0.1:8501
+
+  extraVolumes:
+    - type: secret
+      name: consul-client-certs
+      load: false
+    - type: secret
+      name: consul-gossip-encryption-key
+      load: false
+
+connectInject:
+  # True if you want to enable connect injection. Set to "-" to inherit from
+  # global.enabled.
+  enabled: false
+
+dns:
+  enabled: true
+
+ui:
+  enabled: true
+  service:
+    enabled: true
+    type: NodePort

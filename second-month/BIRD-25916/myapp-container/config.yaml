@@ -1,0 +1,8 @@
+{{- with secret "database/creds/my-role" -}}
+database:
+  db_host: 192.168.122.1
+  db_port: 3306
+  db_name: myapp
+  db_username: {{ .Data.username }}
+  db_password: {{ .Data.password }}
+{{- end }}
