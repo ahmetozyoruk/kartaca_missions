@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magento
+  namespace: {{ .Release.Namespace }}-magento-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magento
+  template:
+    metadata:
+      labels:
+        app: magento
+    spec:
+      containers:
+      - name: magento
+        image: {{ .Values.magento.image }}
+        envFrom:
+        - configMapRef:
+            name: magento-config
+        ports:
+        - containerPort: 80

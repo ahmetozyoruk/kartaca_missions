@@ -1,0 +1,17 @@
+# values.yaml
+mariadb:
+  image: mariadb:10.4
+  user: magento
+  password: magento
+  rootPassword: root
+  database: magento
+
+elasticsearch:
+  image: elasticsearch:7.16.2
+
+magento:
+  image: ahmetozyoruk/magento:2.0
+  host: localhost
+
+config:
+  deploySampleData: "1"

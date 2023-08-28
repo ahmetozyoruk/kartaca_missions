@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-config
+  namespace: {{ .Release.Namespace }}-magento-app
+data:
+  MARIADB_USER: {{ .Values.mariadb.user }}
+  MARIADB_PASSWORD: {{ .Values.mariadb.password }}
+  MARIADB_ROOT_PASSWORD: {{ .Values.mariadb.rootPassword }}
+  MARIADB_DATABASE: {{ .Values.mariadb.database }}

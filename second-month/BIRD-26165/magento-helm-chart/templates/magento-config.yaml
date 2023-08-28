@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: magento-config
+  namespace: {{ .Release.Namespace }}-magento-app
+data:
+  MAGENTO_HOST: {{ .Values.magento.host }}
+  DB_SERVER: mariadb
+  ELASTICSEARCH_SERVER: elasticsearch
+  DEPLOY_SAMPLEDATA: "{{ .Values.config.deploySampleData }}"

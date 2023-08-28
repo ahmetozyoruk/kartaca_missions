@@ -1,0 +1,214 @@
+###############################
+
+# namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: magento-app
+
+---
+
+# mariadb-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: magento-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:10.4
+        envFrom:
+        - configMapRef:
+            name: mariadb-config
+        ports:
+        - containerPort: 3306
+
+---
+
+# mariadb-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: magento-app
+spec:
+  selector:
+    app: mariadb
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+
+---
+
+# elasticsearch-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: magento-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      initContainers:
+        - name: increase-vm-max-map
+          image: busybox
+          command: ["sysctl", "-w", "vm.max_map_count=262144"]
+          securityContext:
+            privileged: true
+        - name: increase-fd-ulimit
+          image: busybox
+          command: ["sh", "-c", "ulimit -n 65536"]
+          securityContext:
+            privileged: true
+        - name: modify-elasticsearch-config
+          image: busybox  # Replace with your initContainer image
+          command: ["/bin/sh", "-c"]
+            # echo "network.host: 0.0.0.0" >> /etc/elasticsearch/elasticsearch.yml
+          args:
+            - >
+              echo "network.host: 0.0.0.0" >> /etc/elasticsearch/elasticsearch.yml
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/elasticsearch
+      containers:
+      - name: elasticsearch
+        image: elasticsearch:7.16.2
+        envFrom:
+        - configMapRef:
+            name: elasticsearch-config
+        resources:
+          limits:
+            memory: "512Mi"  # Adjust as needed
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/elasticsearch
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+      volumes:
+        - name: config-volume
+          emptyDir: {}
+
+---
+
+# elasticsearch-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: magento-app
+spec:
+  selector:
+    app: elasticsearch
+  ports:
+    - protocol: TCP
+      name: db
+      port: 9200
+      targetPort: 9200
+    - protocol: TCP
+      name: monitoring
+      port: 9300
+      targetPort: 9300
+
+---
+
+# magento-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magento
+  namespace: magento-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magento
+  template:
+    metadata:
+      labels:
+        app: magento
+    spec:
+      containers:
+      - name: magento
+        image: ahmetozyoruk/magento:2.0
+        envFrom:
+        - configMapRef:
+            name: magento-config
+        ports:
+        - containerPort: 80
+
+---
+
+# magento-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento
+  namespace: magento-app
+spec:
+  selector:
+    app: magento
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+
+# magento-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: magento-config
+  namespace: magento-app
+data:
+  MAGENTO_HOST: localhost
+  DB_SERVER: mariadb
+  ELASTICSEARCH_SERVER: elasticsearch
+  DEPLOY_SAMPLEDATA: "1"
+
+---
+
+# mariadb-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-config
+  namespace: magento-app
+data:
+  MARIADB_USER: magento
+  MARIADB_PASSWORD: magento
+  MARIADB_ROOT_PASSWORD: root
+  MARIADB_DATABASE: magento
+  
+
+---
+
+# elasticsearch-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: magento-app
+data:
+  # DISCOVERY_TYPE: single-node
+  discovery.type: single-node
+  network.host: 0.0.0.0

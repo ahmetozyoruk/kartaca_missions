@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: {{ .Release.Namespace }}-magento-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      initContainers:
+        # ... (Init container details)
+      containers:
+      - name: elasticsearch
+        image: {{ .Values.elasticsearch.image }}
+        envFrom:
+        - configMapRef:
+            name: elasticsearch-config
+        resources:
+          limits:
+            memory: "512Mi"
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+      volumes:
+        - name: config-volume
+          emptyDir: {}
