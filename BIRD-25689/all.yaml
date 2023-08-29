@@ -1,0 +1,79 @@
+---
+# Source: nginx-chart/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mychart-index-html-configmap
+  namespace: default
+data:
+  index.html: |
+    <html>
+    <h1>Second Attempt</h1>
+    </br>
+    <h1>Hi! I got deployed Second Attempt in dev Environment using Helm Chart </h1>
+    </html>
+---
+# Source: nginx-chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mychart-service
+spec:
+  selector:
+    app.kubernetes.io/instance: mychart
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9000
+---
+# Source: nginx-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mychart-nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx-chart
+          image: "nginx:1.16.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 250m
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              httpHeaders:
+                - name: Accept
+                  value: 
+            failureThreshold: 1
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+              httpHeaders:
+                - name: User-Agent
+                  value: 
+            failureThreshold: 1
+            periodSeconds: 10
