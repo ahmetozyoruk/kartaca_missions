@@ -157,6 +157,39 @@ spec:
 
 ---
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magento-cron
+  namespace: magento-app
+  labels:
+    app: magento-cron
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+          app: magento-cron
+  template:
+    metadata:
+      labels:
+        app: magento-cron
+    spec:
+      containers:
+        - image: ahmetozyoruk/magento:2.0
+          name: magento-cron
+          envFrom:
+            - configMapRef:
+                name: magento-config
+          ports:
+            - containerPort: 80
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/local/bin/php", "/var/www/html/bin/magento", "cron:run"]
+
+
+---
+
 # magento-service.yaml
 apiVersion: v1
 kind: Service
